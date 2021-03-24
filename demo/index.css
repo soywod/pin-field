@@ -9,6 +9,10 @@ pre {
   padding: 1rem;
 }
 
+input {
+  max-width: 3.5rem;
+}
+
 .pin-field-container {
   display: grid;
   grid-auto-columns: max-content;

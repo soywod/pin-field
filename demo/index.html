@@ -46,7 +46,7 @@
           <a class="mr-2" href="https://www.npmjs.com/package/react-pin-field">
             <img src="https://img.shields.io/npm/v/react-pin-field?label=npm" alt="" />
           </a>
-          <kbd>$ yarn add react-pin-field</kbd>
+          <kbd>$ yarn add @soywod/pin-field</kbd>
         </div>
         <div class="pin-field-container">
           <swd-pin-field id="pin-field-jumbotron">
@@ -57,71 +57,159 @@
     </div>
 
     <div class="container mb-5">
-      <h2 class="display-5 mb-4">Default</h2>
-      <div>
-        <swd-pin-field></swd-pin-field>
-      </div>
-
-      <h2 class="display-5 mt-4">With ref</h2>
-      <p class="mb-4 text-muted">You can control each inputs with the pin field ref:</p>
-      <div>
-        <swd-pin-field></swd-pin-field>
-      </div>
-      <div>
-        <!-- <button onClick={() => ref && ref.current && ref.current[1].focus()}>Focus 2nd input</button> -->
-        <!-- <button onClick={() => ref && ref.current && ref.current.forEach(input => (input.value = ""))}> -->
-        <!--   Reset values -->
-        <!-- </button> -->
-      </div>
-
-      <h2 class="display-5 mt-5">With custom style</h2>
+      <h2 class="display-5">Basic</h2>
       <p class="mb-4 text-muted">
-        PIN Field follows the <a href="https://css-tricks.com/abem-useful-adaptation-bem/">ABEM</a> convention. Each
-        input has a class named <code>a-reactPinField__input</code>, plus:
+        To work, PIN Field needs an input as child. It is used as reference for the other fields.
       </p>
-      <ul>
-        <li>
-          <code>-{"{index}"}</code> where index is the position of the input. Eg: <code>-0</code> for the first input,{"
-          "} <code>-2</code> for the third etc.
-        </li>
-        <li><code>-focus</code> when the current input is focused</li>
-        <li><code>-success</code> when a key is resolved</li>
-        <li><code>-error</code> when a key is rejected</li>
-      </ul>
       <div>
-        <swd-pin-field></swd-pin-field>
+        <swd-pin-field>
+          <input />
+        </swd-pin-field>
+        <details>
+          <summary>Source code</summary>
+          <pre>
+&lt;swd-pin-field&gt;
+  &lt;input /&gt;
+&lt;/swd-pin-field&gt;</pre
+          >
+        </details>
       </div>
 
       <h2 class="display-5 mt-5">With custom length</h2>
-      <p class="mb-4 text-muted">You can set the number of chars with the length prop. Default set to 5 chars.</p>
+      <p class="mb-4 text-muted">
+        The length of the field can be customized via the <code>length</code> attribute (default to 5).
+      </p>
       <div>
-        <swd-pin-field></swd-pin-field>
+        <swd-pin-field length="3">
+          <input />
+        </swd-pin-field>
+        <details>
+          <summary>Source code</summary>
+          <pre>
+&lt;swd-pin-field length=&quot;3&quot;&gt;
+  &lt;input /&gt;
+&lt;/swd-pin-field&gt;</pre
+          >
+        </details>
       </div>
 
       <h2 class="display-5 mt-5">With custom validation</h2>
-      <p class="mb-4 text-muted">You can restrict input with a string of allowed chars, or a regex, or a function.</p>
+      <p class="mb-4 text-muted">
+        You can restrict input with a string of allowed chars (via attrs), a regex, or a function (via props).
+      </p>
       <p>Only numbers:</p>
       <div>
-        <swd-pin-field></swd-pin-field>
+        <swd-pin-field validate="0123456789">
+          <input />
+        </swd-pin-field>
+        <details>
+          <summary>Source code</summary>
+          <pre>
+&lt;swd-pin-field validate=&quot;0123456789&quot;&gt;
+  &lt;input /&gt;
+&lt;/swd-pin-field&gt;</pre
+          >
+        </details>
       </div>
 
       <h2 class="display-5 mt-5">With custom events</h2>
       <ul class="mb-4 text-muted">
-        <li>onChange: when the code changes</li>
-        <li>onComplete: when the code has been filled</li>
-        <li>onResolveKey: when receive a good key</li>
-        <li>onRejectKey: when receive a bad key</li>
+        <li><code>change</code>: when the code changes</li>
+        <li><code>complete</code>: when the code has been filled</li>
+        <li><code>resolve</code>: when receive a good key</li>
+        <li><code>reject</code>: when receive a bad key</li>
       </ul>
       <div>
-        <swd-pin-field></swd-pin-field>
-      </div>
-      <div>Current code: {code}</div>
-      <div>Completed: {String(completed)}</div>
+        <swd-pin-field id="pin-field-with-evts">
+          <input />
+        </swd-pin-field>
+        <details>
+          <summary>Source code</summary>
+          <pre>
+&lt;swd-pin-field id=&quot;pin-field-with-evts&quot;&gt;
+  &lt;input /&gt;
+&lt;/swd-pin-field&gt;
 
-      <h2 class="display-5 mt-5">With custom InputHTMLAttributes</h2>
-      <p class="mb-4 text-muted">Props inherit from InputHTMLAttributes. For eg. with a password type prop:</p>
+const pinFieldWithEvts = document.getElementById("pin-field-with-evts");
+pinFieldWithEvts.addEventListener("change", evt =&gt; alert(`PIN Field changed: ${evt.detail.value}`));
+pinFieldWithEvts.addEventListener("complete", evt =&gt; alert(`PIN Field completed: ${evt.detail.value}`));
+pinFieldWithEvts.addEventListener("resolve", evt =&gt; alert(`PIN Field key resolved: ${evt.detail.key}`));
+pinFieldWithEvts.addEventListener("reject", evt =&gt; alert(`PIN Field key resolved: ${evt.detail.key}`));</pre
+          >
+        </details>
+      </div>
+
+      <h2 class="display-5 mt-5">With custom style</h2>
+      <p class="mb-4 text-muted">
+        Just apply your custom style on the input you pass as a child. Pseudo-classes also work (<code>:valid</code>,
+        <code>:invalid</code>, <code>:focus</code>, <code>:hover</code>…)
+      </p>
       <div>
-        <swd-pin-field></swd-pin-field>
+        <swd-pin-field>
+          <input
+            class="pin-field"
+            type="password"
+            autocapitalize="off"
+            autocorrect="off"
+            autocomplete="off"
+            inputmode="text"
+          />
+        </swd-pin-field>
+        <details>
+          <summary>Source code</summary>
+          <pre>
+&lt;swd-pin-field&gt;
+  &lt;input
+    class=&quot;pin-field&quot;
+    type=&quot;password&quot;
+    autocapitalize=&quot;off&quot;
+    autocorrect=&quot;off&quot;
+    autocomplete=&quot;off&quot;
+    inputmode=&quot;text&quot;
+  /&gt;
+&lt;/swd-pin-field&gt;
+
+.pin-field {
+  background-color: rgb(248, 249, 250);
+  border: 1px solid rgb(204, 204, 204);
+  border-radius: 0.3rem;
+  font-size: 2rem;
+  margin: 0.25rem;
+  height: 3.5rem;
+  outline: none;
+  text-align: center;
+  transition-duration: 250ms;
+  transition-property: background, color, border, box-shadow, transform;
+  width: 3rem;
+}
+
+.pin-field:focus {
+  border-color: rgb(0, 123, 255);
+  outline: none;
+  transform: scale(1.05);
+}
+
+.pin-field:invalid {
+  animation: shake 3 linear 75ms;
+  border-color: rgb(220, 53, 69);
+  box-shadow: 0 0 0.25rem rgba(220, 53, 69, 0.5);
+}
+
+swd-pin-field[completed] .pin-field {
+  border-color: rgb(40, 167, 69);
+  background-color: rgba(40, 167, 69, 0.25);
+}
+
+@keyframes shake {
+  from {
+    transform: scale(1.05) translateY(-5%);
+  }
+  to {
+    transform: scale(1.05) translateY(5%);
+  }
+}</pre
+          >
+        </details>
       </div>
     </div>
     <script type="module" src="/lib/pin-field.js"></script>

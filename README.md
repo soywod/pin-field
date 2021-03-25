@@ -19,13 +19,8 @@ npm install @soywod/pin-field
 ## Usage
 
 ```html
-<swd-pin-field>
-  <input />
-</swd-pin-field>
+<swd-pin-field></swd-pin-field>
 ```
-
-PIN Field requires one unique child: a `HTMLInputElement`. It is used as
-reference for other inputs.
 
 ### Attributes
 
@@ -33,6 +28,8 @@ reference for other inputs.
 | --- | --- |
 | `length` | Number of inputs the PIN Field is composed of |
 | `validate` | List of allowed chars |
+
+*All additional attributes are transfered to all the inputs.*
 
 ### Properties
 

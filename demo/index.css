@@ -49,7 +49,7 @@ input {
 
 swd-pin-field[completed] .pin-field {
   border-color: rgb(40, 167, 69);
-  background-color: rgba(40, 167, 69, 0.25);
+  background-color: rgba(40, 167, 69, 0.1);
 }
 
 .pin-field[disabled] {

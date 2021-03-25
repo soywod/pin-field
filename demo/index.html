@@ -38,108 +38,78 @@
           <kbd>$ npm i @soywod/pin-field</kbd>
         </div>
         <div class="pin-field-container">
-          <swd-pin-field id="pin-field-jumbotron">
-            <input class="pin-field" />
-          </swd-pin-field>
+          <swd-pin-field id="pin-field-jumbotron" class="pin-field" autofocus></swd-pin-field>
         </div>
       </div>
     </div>
 
     <div class="container mb-5">
       <h2 class="display-5">Basic</h2>
-      <p class="mb-4 text-muted">
-        To work, PIN Field needs an input as child. It is used as reference for the other fields.
-      </p>
       <div>
-        <swd-pin-field>
-          <input />
-        </swd-pin-field>
+        <swd-pin-field></swd-pin-field>
         <details>
           <summary>Source code</summary>
-          <pre>
-&lt;swd-pin-field&gt;
-  &lt;input /&gt;
-&lt;/swd-pin-field&gt;</pre
-          >
+          <pre>&lt;swd-pin-field&gt;&lt;/swd-pin-field&gt;</pre>
         </details>
       </div>
 
-      <h2 class="display-5 mt-5">With custom length</h2>
+      <h2 class="display-5 mt-5">Custom length</h2>
       <p class="mb-4 text-muted">
-        The length of the field can be customized via the <code>length</code> attribute (default to 5).
+        The length of the field can be customized via the <code>length</code> attribute/property (default to 5).
       </p>
       <div>
-        <swd-pin-field length="3">
-          <input />
-        </swd-pin-field>
+        <swd-pin-field length="3"></swd-pin-field>
         <details>
           <summary>Source code</summary>
-          <pre>
-&lt;swd-pin-field length=&quot;3&quot;&gt;
-  &lt;input /&gt;
-&lt;/swd-pin-field&gt;</pre
-          >
+          <pre>&lt;swd-pin-field length=&quot;3&quot;&gt;&lt;/swd-pin-field&gt;</pre>
         </details>
       </div>
 
-      <h2 class="display-5 mt-5">With custom validation</h2>
+      <h2 class="display-5 mt-5">Custom validation</h2>
       <p class="mb-4 text-muted">
-        You can restrict input with a string of allowed chars (via attrs), a regex, or a function (via props).
+        The validation can be handled by a string of allowed chars (attribute), a regex (property), or a function
+        (property).
       </p>
       <p>Only numbers:</p>
       <div>
-        <swd-pin-field validate="0123456789">
-          <input />
-        </swd-pin-field>
+        <swd-pin-field validate="0123456789"></swd-pin-field>
         <details>
           <summary>Source code</summary>
-          <pre>
-&lt;swd-pin-field validate=&quot;0123456789&quot;&gt;
-  &lt;input /&gt;
-&lt;/swd-pin-field&gt;</pre
-          >
+          <pre>&lt;swd-pin-field validate=&quot;0123456789&quot;&gt;&lt;/swd-pin-field&gt;</pre>
         </details>
       </div>
 
-      <h2 class="display-5 mt-5">With custom formatter</h2>
-      <p class="mb-4 text-muted">You can format resolved keys with the <code>format</code> prop.</p>
+      <h2 class="display-5 mt-5">Custom formatter</h2>
+      <p class="mb-4 text-muted">Resolved keys can be formatted with the <code>format</code> prop.</p>
       <p>All uppercase:</p>
       <div>
-        <swd-pin-field id="pin-field-uppercase">
-          <input />
-        </swd-pin-field>
+        <swd-pin-field id="pin-field-uppercase"></swd-pin-field>
         <details>
           <summary>Source code</summary>
           <pre>
-&lt;swd-pin-field id=&quot;pin-field-uppercase&quot;&gt;
-  &lt;input /&gt;
-&lt;/swd-pin-field&gt;
+&lt;swd-pin-field id=&quot;field&quot;&gt;&lt;/swd-pin-field&gt;
 
-const field = document.getElementById("pin-field-uppercase");
+const field = document.getElementById("field");
 field.format = key =&gt; key.toUpperCase();</pre
           >
         </details>
       </div>
 
-      <h2 class="display-5 mt-5">With custom events</h2>
+      <h2 class="display-5 mt-5">Custom events</h2>
       <ul class="mb-4 text-muted">
         <li><code>change</code>: when the code changes</li>
-        <li><code>complete</code>: when the code has been filled</li>
-        <li><code>resolve</code>: when receive a good key</li>
-        <li><code>reject</code>: when receive a bad key</li>
+        <li><code>complete</code>: when the code is complete</li>
+        <li><code>resolve</code>: when a key passes the validator</li>
+        <li><code>reject</code>: when a key does not pass the validator</li>
       </ul>
       <div>
-        <swd-pin-field id="pin-field-with-evts">
-          <input />
-        </swd-pin-field>
+        <swd-pin-field id="pin-field-with-evts"></swd-pin-field>
         <details>
           <summary>Source code</summary>
           <pre>
-&lt;swd-pin-field id=&quot;pin-field-with-evts&quot;&gt;
-  &lt;input /&gt;
-&lt;/swd-pin-field&gt;
+&lt;swd-pin-field id=&quot;field&quot;&gt;&lt;/swd-pin-field&gt;
 
-const field = document.getElementById("pin-field-with-evts");
+const field = document.getElementById("field");
 field.addEventListener("change", evt =&gt; alert(`PIN Field changed: ${evt.detail.value}`));
 field.addEventListener("complete", evt =&gt; alert(`PIN Field completed: ${evt.detail.value}`));
 field.addEventListener("resolve", evt =&gt; alert(`PIN Field key resolved: ${evt.detail.key}`));
@@ -148,35 +118,33 @@ field.addEventListener("reject", evt =&gt; alert(`PIN Field key resolved: ${evt.
         </details>
       </div>
 
-      <h2 class="display-5 mt-5">With custom style</h2>
+      <h2 class="display-5 mt-5">Custom style</h2>
       <p class="mb-4 text-muted">
-        Just apply your custom style on the child input. Pseudo-classes also work (<code>:valid</code>,
-        <code>:invalid</code>, <code>:focus</code>, <code>:hover</code>…)
+        The field can be customized with the <code>class</code> and <code>style</code> attributes. Standard validation
+        pseudo-classes <code>:valid</code> and <code>:invalid</code> can also be used. Since there is no
+        <code>:complete</code> pseudo-classe, the field exposes a custom attribute <code>completed</code> to match with
+        <code>disabled</code>.
       </p>
       <div>
-        <swd-pin-field>
-          <input
-            class="pin-field"
-            type="password"
-            autocapitalize="off"
-            autocorrect="off"
-            autocomplete="off"
-            inputmode="text"
-          />
-        </swd-pin-field>
+        <swd-pin-field
+          class="pin-field"
+          type="password"
+          autocapitalize="off"
+          autocorrect="off"
+          autocomplete="off"
+          inputmode="text"
+        ></swd-pin-field>
         <details>
           <summary>Source code</summary>
           <pre>
-&lt;swd-pin-field&gt;
-  &lt;input
-    class=&quot;pin-field&quot;
-    type=&quot;password&quot;
-    autocapitalize=&quot;off&quot;
-    autocorrect=&quot;off&quot;
-    autocomplete=&quot;off&quot;
-    inputmode=&quot;text&quot;
-  /&gt;
-&lt;/swd-pin-field&gt;
+&lt;swd-pin-field
+  class=&quot;pin-field&quot;
+  type=&quot;password&quot;
+  autocapitalize=&quot;off&quot;
+  autocorrect=&quot;off&quot;
+  autocomplete=&quot;off&quot;
+  inputmode=&quot;text&quot;
+&gt;&lt;/swd-pin-field&gt;
 
 .pin-field {
   background-color: rgb(248, 249, 250);

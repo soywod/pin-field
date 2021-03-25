@@ -2,7 +2,7 @@
 
 Native web component for entering PIN codes.
 
-![gif](https://user-images.githubusercontent.com/10437171/112401633-419e9280-8d0b-11eb-9278-033c88942e36.gif)
+![gif](https://user-images.githubusercontent.com/10437171/112440937-2e131c00-8d4b-11eb-902c-9aa6b37973be.gif)
 
 *Live demo at https://soywod.github.io/pin-field/demo/.*
 

@@ -1,10 +1,38 @@
 {
-  "name": "pin-field",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
+  "name": "@soywod/pin-field",
+  "description": "📟 Native web component for entering PIN codes.",
+  "author": "soywod <clement.douin@posteo.net>",
+  "license": "BSD-3-Clause",
+  "version": "0.1.0",
+  "private": false,
+  "keywords": [
+    "code",
+    "component",
+    "custom-element",
+    "field",
+    "input",
+    "pin",
+    "shadow-dom",
+    "web-component"
+  ],
+  "homepage": "https://github.com/soywod/pin-field",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/soywod/pin-field.git"
+  },
+  "bugs": {
+    "url": "https://github.com/soywod/pin-field/issues"
+  },
+  "main": "lib/pin-field.min.js",
+  "files": [
+    "lib/pin-field.min.js"
+  ],
   "devDependencies": {
     "eslint": "^7.22.0",
-    "prettier": "^2.2.1"
+    "prettier": "^2.2.1",
+    "terser": "^5.6.1"
+  },
+  "scripts": {
+    "minify": "terser --compress --mangle -- lib/pin-field.js > lib/pin-field.min.js"
   }
 }

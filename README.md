@@ -1,4 +1,4 @@
-# 📟 PIN Field [![npm](https://img.shields.io/github/package-json/v/soywod/pin-field/master?label=version)](https://github.com/soywod?tab=packages&repo_name=pin-field)
+# 📟 PIN Field [![npm](https://img.shields.io/npm/v/@soywod/pin-field)](https://www.npmjs.com/package/@soywod/pin-field)
 
 Native web component for entering PIN codes.
 
@@ -11,18 +11,17 @@ Native web component for entering PIN codes.
 ### From npm
 
 ```bash
-yarn add @soywod/pin-field
-# or
 npm install @soywod/pin-field
+# or
+yarn add @soywod/pin-field
 ```
+
+*The package is available in both GitHub Packages and npm registries.*
 
 ### From CDN (jsDelivr)
 
 ```html
-<script
-  type="module"
-  src="https://cdn.jsdelivr.net/gh/soywod/pin-field/lib/pin-field.min.js"
-></script>
+<script type="module" src="https://cdn.jsdelivr.net/gh/soywod/pin-field/lib/pin-field.min.js"></script>
 ```
 
 ## Usage
@@ -38,7 +37,7 @@ npm install @soywod/pin-field
 | `length` | Number of inputs the PIN Field is composed of |
 | `validate` | List of allowed chars |
 
-*All additional attributes are transfered to all the inputs.*
+*Additional attributes are transfered to all the inputs (except for `id`).*
 
 ### Properties
 

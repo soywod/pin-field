@@ -8,12 +8,21 @@ Native web component for entering PIN codes.
 
 ## Installation
 
+### From npm
+
 ```bash
 yarn add @soywod/pin-field
 # or
 npm install @soywod/pin-field
-# or
-<script type="module" src="https://cdn.jsdelivr.net/gh/soywod/pin-field/lib/pin-field.min.js"></script>
+```
+
+### From CDN (jsDelivr)
+
+```html
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/gh/soywod/pin-field/lib/pin-field.min.js"
+></script>
 ```
 
 ## Usage

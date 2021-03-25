@@ -33,6 +33,6 @@
     "terser": "^5.6.1"
   },
   "scripts": {
-    "minify": "terser --compress --mangle -- lib/pin-field.js > lib/pin-field.min.js"
+    "prepublish": "terser --compress --mangle -- lib/pin-field.js > lib/pin-field.min.js"
   }
 }

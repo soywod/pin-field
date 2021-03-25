@@ -11,7 +11,7 @@
       integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="/demo/index.css" />
+    <link rel="stylesheet" href="./index.css" />
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -20,12 +20,7 @@
       <ul class="navbar-nav mr-auto"></ul>
       <ul class="navbar-nav">
         <li class="nav-item active">
-          <a
-            class="nav-link"
-            href="https://github.com/soywod/react-pin-field"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a class="nav-link" href="https://github.com/soywod/pin-field" target="_blank" rel="noopener noreferrer">
             GitHub
           </a>
         </li>
@@ -37,16 +32,10 @@
         <h1 class="display-3">📟 PIN Field</h1>
         <p class="lead">Native web component for entering PIN codes.</p>
         <div class="mb-4">
-          <a class="mr-2" href="https://travis-ci.org/soywod/react-pin-field">
-            <img src="https://travis-ci.org/soywod/react-pin-field.svg?branch=master" alt="" />
+          <a class="mr-2" href="https://github.com/soywod/pin-field">
+            <img src="https://img.shields.io/github/package-json/v/soywod/pin-field/master?label=version" alt="" />
           </a>
-          <a class="mr-2" href="https://codecov.io/gh/soywod/react-pin-field">
-            <img src="https://codecov.io/gh/soywod/react-pin-field/branch/master/graph/badge.svg" alt="" />
-          </a>
-          <a class="mr-2" href="https://www.npmjs.com/package/react-pin-field">
-            <img src="https://img.shields.io/npm/v/react-pin-field?label=npm" alt="" />
-          </a>
-          <kbd>$ yarn add @soywod/pin-field</kbd>
+          <kbd>$ npm i @soywod/pin-field</kbd>
         </div>
         <div class="pin-field-container">
           <swd-pin-field id="pin-field-jumbotron">
@@ -232,7 +221,7 @@ swd-pin-field[completed] .pin-field {
         </details>
       </div>
     </div>
-    <script type="module" src="/lib/pin-field.js"></script>
-    <script type="module" src="/demo/index.js"></script>
+    <script type="module" src="../lib/pin-field.js"></script>
+    <script type="module" src="./index.js"></script>
   </body>
 </html>

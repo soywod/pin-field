@@ -18,4 +18,35 @@ npm install @soywod/pin-field
 
 ## Usage
 
-TODO
+```html
+<swd-pin-field>
+  <input />
+</swd-pin-field>
+```
+
+PIN Field requires one unique child: a `HTMLInputElement`. It is used as
+reference for other inputs.
+
+### Attributes
+
+| Name | Description |
+| --- | --- |
+| `length` | Number of inputs the PIN Field is composed of |
+| `validate` | List of allowed chars |
+
+### Properties
+
+| Name | Type | Description | Default |
+| --- | --- | --- | --- |
+| `length` | `number` | Number of inputs the PIN Field is composed of | `5` |
+| `validate` | `string\|string[]\|RegExp\|(key: string) => boolean` | Validator | `/^[a-zA-Z0-9]$/` |
+| `format` | `(key: string) => string` | Formatter | `key => key` |
+
+### Events
+
+| Name | Description | Data |
+| --- | --- | --- |
+| `change` | Triggered when the PIN code changes | `{detail: {value: string}}`
+| `complete` | Triggered when the PIN code is complete | `{detail: {value: string}}`
+| `resolve` | Triggered when a key is resolved | `{detail: {key: string}}`
+| `reject` | Triggered when a key is rejected | `{detail: {key: string}}`

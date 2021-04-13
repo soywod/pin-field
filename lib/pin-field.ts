@@ -1,90 +1,82 @@
 export const IGNORED_META_KEYS = ["Alt", "Control", "Enter", "Meta", "Shift", "Tab"];
 
-export function range(start, length) {
+export function range(start: number, length: number) {
   return Array.from({length}, (_, i) => i + start);
 }
 
-export function debug(scope, fn, msg = undefined) {
+export function debug(scope: string, fn: string, msg?: string) {
   console.debug(`[PIN Field] (${scope}) ${fn}${msg ? `: ${msg}` : ""}`);
 }
 
-export function getPrevInputIdx(cursor) {
+export function getPrevInputIdx(cursor: number) {
   return Math.max(0, cursor - 1);
 }
 
-export function getNextInputIdx(cursor, max) {
+export function getNextInputIdx(cursor: number, max: number) {
   if (max === 0) return 0;
   return Math.min(cursor + 1, max - 1);
 }
 
+type Fallback = {
+  idx: number;
+  val: string;
+};
+
+type Validator = string | string[] | RegExp | ((key: string) => boolean);
+
+type Effect =
+  | {type: "handle-code-change"}
+  | {type: "focus-input"; idx: number}
+  | {type: "set-input-val"; idx: number; val: string}
+  | {type: "resolve-key"; idx: number; key: string}
+  | {type: "reject-key"; idx: number; key: string}
+  | {type: "handle-delete"; idx: number};
+
+type Action =
+  | {type: "handle-key-down"; idx: number; key: string; val: string}
+  | {type: "handle-key-up"; idx: number; val: string}
+  | {type: "handle-paste"; idx: number; val: string};
+
 export class PinField extends HTMLElement {
   /**
    * List of HTMLInputElement the PIN Field is composed of.
-   *
-   * @private
-   * @type {HTMLInputElement[]}
-   * @default
    */
-  inputs = [];
+  private inputs: HTMLInputElement[] = [];
 
   /**
    * Current input focus cursor.
-   *
-   * @private
-   * @type {number}
-   * @default
    */
-  cursor = 0;
+  private cursor: number = 0;
 
   /**
    * Actions stack.
-   *
-   * @private
-   * @default
    */
-  actions = [];
+  private actions: Action[] = [];
 
   /**
    * Effects stack.
-   *
-   * @private
-   * @default
    */
-  effects = [];
+  private effects: Effect[] = [];
 
   /**
    * State-holder fallback for old browsers and mobile support.
-   *
-   * @private
-   * @type {({idx: number, val: string} | null)}
-   * @default
    */
-  fallback = null;
+  private fallback: Fallback | null = null;
 
   /**
    * Length of the field.
-   *
-   * @type {number} [5]
-   * @default
    */
-  length = 5;
+  length: number = 5;
 
   /**
    * Validator.
-   *
-   * @type {(string|string[]|RegExp|(key: string) => boolean)}
-   * @default
    */
-  validate = /^[a-zA-Z0-9]$/;
+  validate: Validator = /^[a-zA-Z0-9]$/;
 
   /**
    * Wrapper around the validator (for internal use).
-   *
-   * @private
-   * @param {string} key The key to validate.
-   * @returns {boolean}
    */
-  isKeyAllowed(key) {
+  private isKeyAllowed(key?: string) {
     if (!key) return false;
     if (key.length > 1) return false;
     if (typeof this.validate === "string") return this.validate.split("").includes(key);
@@ -95,11 +87,8 @@ export class PinField extends HTMLElement {
 
   /**
    * Formatter.
-   *
-   * @param {string} key The key to format.
-   * @returns {string}
    */
-  format(key) {
+  format(key: string) {
     return key;
   }
 
@@ -113,27 +102,33 @@ export class PinField extends HTMLElement {
       }
     }
 
-    if (this.hasAttribute("validate")) {
-      this.validate = this.getAttribute("validate");
+    const validate = this.getAttribute("validate");
+    if (typeof validate === "string") {
+      this.validate = validate;
     }
+  }
 
+  /**
+   * Connected callback.
+   */
+  connectedCallback() {
     const input = document.createElement("input");
     input.autocapitalize = "off";
-    input.autocorrect = "off";
     input.autocomplete = "off";
-    input.inputmode = "text";
+    input.inputMode = "text";
 
     const clearAttrs = [];
-    for (const attr of this.attributes) {
+    for (let i = 0; i < this.attributes.length; i++) {
+      const attr = this.attributes[i];
       if (!["id", "autofocus"].includes(attr.name)) {
         input.setAttribute(attr.name, attr.value);
-        clearAttrs.push(() => this.removeAttribute(attr.name));
+        clearAttrs.push(() => attr && this.removeAttribute(attr.name));
       }
     }
 
     this.append(
       ...range(0, this.length).map(idx => {
-        const inputClone = input.cloneNode(true);
+        const inputClone = input.cloneNode(true) as HTMLInputElement;
 
         if (idx === 0 && this.hasAttribute("autofocus")) {
           inputClone.autofocus = true;
@@ -151,16 +146,29 @@ export class PinField extends HTMLElement {
     this.attachShadow({mode: "open"}).append(css, tpl);
 
     clearAttrs.forEach(clear => clear());
+
+    this.inputs.forEach((input, idx) => {
+      input.addEventListener("keydown", this.handleKeyDown(idx));
+      input.addEventListener("keyup", this.handleKeyUp(idx));
+      input.addEventListener("paste", this.handlePaste(idx));
+    });
   }
 
   /**
-   * Set a value starting from a specific index using the effects stack
-   *
-   * @param {number} idx The starting index
-   * @param {number} val The value to paste
-   * @returns {void}
+   * Disconnected callback.
    */
-  applySetValAt(idx, val) {
+  disconnectedCallback() {
+    this.inputs.forEach((input, idx) => {
+      input.removeEventListener("keydown", this.handleKeyDown(idx));
+      input.removeEventListener("keyup", this.handleKeyUp(idx));
+      input.removeEventListener("paste", this.handlePaste(idx));
+    });
+  }
+
+  /**
+   * Set a value starting from a specific index using the effects stack.
+   */
+  applySetValAt(idx: number, val: string) {
     if (val.split("").slice(0, this.length).every(this.isKeyAllowed.bind(this))) {
       const pasteLen = Math.min(val.length, this.length - idx);
       const nextCursor = getNextInputIdx(pasteLen + idx - 1, this.length);
@@ -168,7 +176,7 @@ export class PinField extends HTMLElement {
       this.effects.push(
         {type: "handle-code-change"},
         {type: "focus-input", idx: nextCursor},
-        ...range(0, pasteLen).flatMap(i => [
+        ...range(0, pasteLen).flatMap<Effect>(i => [
           {
             type: "set-input-val",
             idx: idx + i,
@@ -193,12 +201,10 @@ export class PinField extends HTMLElement {
   /**
    * Execute all actions present in the stack.
    * An action should mutate internal state and generate effects.
-   *
-   * @returns void
    */
   executeAll() {
     while (this.actions.length > 0) {
-      const action = this.actions.pop();
+      const action = this.actions.pop() as Action;
 
       switch (action.type) {
         case "handle-key-down": {
@@ -289,12 +295,10 @@ export class PinField extends HTMLElement {
   /**
    * Apply all effects present in the stack.
    * An effect is an action with side-effects.
-   *
-   * @returns void
    */
   applyAll() {
     while (this.effects.length > 0) {
-      const eff = this.effects.pop();
+      const eff = this.effects.pop() as Effect;
 
       switch (eff.type) {
         case "focus-input": {
@@ -324,7 +328,7 @@ export class PinField extends HTMLElement {
           break;
         }
 
-        // TODO: use existing effects
+        // TODO: split into existing effects
         case "handle-delete": {
           debug("effect", "handle-delete", `idx=${eff.idx}`);
           const prevVal = this.inputs[eff.idx].value;
@@ -363,8 +367,6 @@ export class PinField extends HTMLElement {
 
   /**
    * Execute all actions, then apply all effects.
-   *
-   * @returns {void}
    */
   render() {
     this.executeAll();
@@ -373,80 +375,49 @@ export class PinField extends HTMLElement {
 
   /**
    * Wrapper around key down event handler.
-   *
-   * @param {number} idx The input index
-   * @returns {(evt: KeyboardEvent) => void} The event handler itself
    */
-  handleKeyDown(idx) {
-    return evt => {
+  handleKeyDown(idx: number) {
+    return (evt: KeyboardEvent) => {
       if (IGNORED_META_KEYS.includes(evt.key) || evt.ctrlKey || evt.altKey || evt.metaKey) {
         debug("handleKeyDown", "ignored", `idx=${idx},key=${evt.key}`);
         return;
       }
 
-      evt.preventDefault();
-      const val = evt.target.value;
-      debug("handleKeyDown", "triggered", `idx=${idx},key=${evt.key},val=${val}`);
-      this.actions.push({type: "handle-key-down", idx, key: evt.key, val});
-      this.render();
+      if (evt.target instanceof HTMLInputElement) {
+        evt.preventDefault();
+        const val = evt.target.value;
+        debug("handleKeyDown", "triggered", `idx=${idx},key=${evt.key},val=${val}`);
+        this.actions.push({type: "handle-key-down", idx, key: evt.key, val});
+        this.render();
+      }
     };
   }
 
   /**
    * Wrapper around key up event handler.
-   *
-   * @param {number} idx The input index
-   * @returns {(evt: KeyboardEvent) => void} The event handler itself
    */
-  handleKeyUp(idx) {
-    return evt => {
-      const val = evt.target.value;
-      debug("handleKeyUp", "triggered", `idx=${idx},val=${val}`);
-      this.actions.push({type: "handle-key-up", idx, val});
-      this.render();
+  handleKeyUp(idx: number) {
+    return (evt: KeyboardEvent) => {
+      if (evt.target instanceof HTMLInputElement) {
+        const val = evt.target.value;
+        debug("handleKeyUp", "triggered", `idx=${idx},val=${val}`);
+        this.actions.push({type: "handle-key-up", idx, val});
+        this.render();
+      }
     };
   }
 
   /**
    * Wrapper around paste event handler.
-   *
-   * @param {number} idx The input index
-   * @returns {(evt: ClipboardEvent) => void} The event handler itself
    */
-  handlePaste(idx) {
-    return evt => {
+  handlePaste(idx: number) {
+    return (evt: ClipboardEvent) => {
       evt.preventDefault();
-      const val = evt.clipboardData.getData("Text");
+      const val = evt.clipboardData ? evt.clipboardData.getData("Text") : "";
       debug("handlePaste", "triggered", `idx=${idx},val=${val}`);
       this.actions.push({type: "handle-paste", idx, val});
       this.render();
     };
-  }
-
-  /**
-   * Connected callback.
-   *
-   * @returns {void}
-   */
-  connectedCallback() {
-    this.inputs.forEach((input, idx) => {
-      input.addEventListener("keydown", this.handleKeyDown(idx));
-      input.addEventListener("keyup", this.handleKeyUp(idx));
-      input.addEventListener("paste", this.handlePaste(idx));
-    });
-  }
-
-  /**
-   * Disconnected callback.
-   *
-   * @returns {void}
-   */
-  disconnectedCallback() {
-    this.inputs.forEach((input, idx) => {
-      input.removeEventListener("keydown", this.handleKeyDown(idx));
-      input.removeEventListener("keyup", this.handleKeyUp(idx));
-      input.removeEventListener("paste", this.handlePaste(idx));
-    });
   }
 }
 

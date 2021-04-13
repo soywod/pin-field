@@ -3,7 +3,7 @@
   "description": "📟 Native web component for entering PIN codes.",
   "author": "soywod <clement.douin@posteo.net>",
   "license": "BSD-3-Clause",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": false,
   "keywords": [
     "code",

@@ -6,6 +6,7 @@ node_modules/
 # production
 lib/pin-field.js
 lib/pin-field.min.js
+lib/pin-field.d.ts
 
 # misc
 yarn-debug.log*

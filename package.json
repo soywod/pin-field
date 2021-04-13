@@ -24,8 +24,10 @@
     "url": "https://github.com/soywod/pin-field/issues"
   },
   "main": "lib/pin-field.min.js",
+  "types": "lib/pin-field.d.ts",
   "files": [
-    "lib/pin-field.min.js"
+    "lib/pin-field.min.js",
+    "lib/pin-field.d.ts"
   ],
   "devDependencies": {
     "eslint": "^7.22.0",

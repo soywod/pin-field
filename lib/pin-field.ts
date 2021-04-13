@@ -1,18 +1,18 @@
-export const IGNORED_META_KEYS = ["Alt", "Control", "Enter", "Meta", "Shift", "Tab"];
+const IGNORED_META_KEYS = ["Alt", "Control", "Enter", "Meta", "Shift", "Tab"];
 
-export function range(start: number, length: number) {
+function range(start: number, length: number) {
   return Array.from({length}, (_, i) => i + start);
 }
 
-export function debug(scope: string, fn: string, msg?: string) {
+function debug(scope: string, fn: string, msg?: string) {
   console.debug(`[PIN Field] (${scope}) ${fn}${msg ? `: ${msg}` : ""}`);
 }
 
-export function getPrevInputIdx(cursor: number) {
+function getPrevInputIdx(cursor: number) {
   return Math.max(0, cursor - 1);
 }
 
-export function getNextInputIdx(cursor: number, max: number) {
+function getNextInputIdx(cursor: number, max: number) {
   if (max === 0) return 0;
   return Math.min(cursor + 1, max - 1);
 }
@@ -21,8 +21,6 @@ type Fallback = {
   idx: number;
   val: string;
 };
-
-type Validator = string | string[] | RegExp | ((key: string) => boolean);
 
 type Effect =
   | {type: "handle-code-change"}
@@ -36,6 +34,9 @@ type Action =
   | {type: "handle-key-down"; idx: number; key: string; val: string}
   | {type: "handle-key-up"; idx: number; val: string}
   | {type: "handle-paste"; idx: number; val: string};
+
+export type PinFieldValidator = string | string[] | RegExp | ((key: string) => boolean);
+export type PinFieldFormatter = (key: string) => string;
 
 export class PinField extends HTMLElement {
   /**
@@ -64,16 +65,6 @@ export class PinField extends HTMLElement {
   private fallback: Fallback | null = null;
 
   /**
-   * Length of the field.
-   */
-  length: number = 5;
-
-  /**
-   * Validator.
-   */
-  validate: Validator = /^[a-zA-Z0-9]$/;
-
-  /**
    * Wrapper around the validator (for internal use).
    */
   private isKeyAllowed(key?: string) {
@@ -86,9 +77,19 @@ export class PinField extends HTMLElement {
   }
 
   /**
+   * Length of the field.
+   */
+  length: number = 5;
+
+  /**
+   * Validator.
+   */
+  validate: PinFieldValidator = /^[a-zA-Z0-9]$/;
+
+  /**
    * Formatter.
    */
-  format(key: string) {
+  format: PinFieldFormatter = (key: string) => {
     return key;
   }
 
@@ -168,7 +169,7 @@ export class PinField extends HTMLElement {
   /**
    * Set a value starting from a specific index using the effects stack.
    */
-  applySetValAt(idx: number, val: string) {
+  private applySetValAt(idx: number, val: string) {
     if (val.split("").slice(0, this.length).every(this.isKeyAllowed.bind(this))) {
       const pasteLen = Math.min(val.length, this.length - idx);
       const nextCursor = getNextInputIdx(pasteLen + idx - 1, this.length);
@@ -202,7 +203,7 @@ export class PinField extends HTMLElement {
    * Execute all actions present in the stack.
    * An action should mutate internal state and generate effects.
    */
-  executeAll() {
+  private executeAll() {
     while (this.actions.length > 0) {
       const action = this.actions.pop() as Action;
 
@@ -296,7 +297,7 @@ export class PinField extends HTMLElement {
    * Apply all effects present in the stack.
    * An effect is an action with side-effects.
    */
-  applyAll() {
+  private applyAll() {
     while (this.effects.length > 0) {
       const eff = this.effects.pop() as Effect;
 
@@ -368,7 +369,7 @@ export class PinField extends HTMLElement {
   /**
    * Execute all actions, then apply all effects.
    */
-  render() {
+  private render() {
     this.executeAll();
     this.applyAll();
   }
@@ -376,7 +377,7 @@ export class PinField extends HTMLElement {
   /**
    * Wrapper around key down event handler.
    */
-  handleKeyDown(idx: number) {
+  private handleKeyDown(idx: number) {
     return (evt: KeyboardEvent) => {
       if (IGNORED_META_KEYS.includes(evt.key) || evt.ctrlKey || evt.altKey || evt.metaKey) {
         debug("handleKeyDown", "ignored", `idx=${idx},key=${evt.key}`);
@@ -396,7 +397,7 @@ export class PinField extends HTMLElement {
   /**
    * Wrapper around key up event handler.
    */
-  handleKeyUp(idx: number) {
+  private handleKeyUp(idx: number) {
     return (evt: KeyboardEvent) => {
       if (evt.target instanceof HTMLInputElement) {
         const val = evt.target.value;
@@ -410,7 +411,7 @@ export class PinField extends HTMLElement {
   /**
    * Wrapper around paste event handler.
    */
-  handlePaste(idx: number) {
+  private handlePaste(idx: number) {
     return (evt: ClipboardEvent) => {
       evt.preventDefault();
       const val = evt.clipboardData ? evt.clipboardData.getData("Text") : "";

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "declaration": true,
     "lib": ["DOM", "ESNext"],
     "module": "ESNext",
     "strict": true,

@@ -93,9 +93,10 @@ export class PinField extends HTMLElement {
     return key;
   }
 
-  constructor() {
-    super();
-
+  /**
+   * Connected callback.
+   */
+  connectedCallback() {
     if (this.hasAttribute("length")) {
       this.length = Number(this.getAttribute("length")) || 5;
       if (this.length < 1) {
@@ -107,12 +108,7 @@ export class PinField extends HTMLElement {
     if (typeof validate === "string") {
       this.validate = validate;
     }
-  }
 
-  /**
-   * Connected callback.
-   */
-  connectedCallback() {
     const input = document.createElement("input");
     input.autocapitalize = "off";
     input.autocomplete = "off";

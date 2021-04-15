@@ -3,7 +3,7 @@
   "description": "📟 Native web component for entering PIN codes.",
   "author": "soywod <clement.douin@posteo.net>",
   "license": "BSD-3-Clause",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "private": false,
   "keywords": [
     "code",
@@ -26,7 +26,6 @@
   "main": "lib/pin-field.min.js",
   "types": "lib/pin-field.d.ts",
   "files": [
-    "lib/pin-field.js",
     "lib/pin-field.min.js",
     "lib/pin-field.d.ts"
   ],

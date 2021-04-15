@@ -21,7 +21,7 @@ yarn add @soywod/pin-field
 ### From CDN (jsDelivr)
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/gh/soywod/pin-field/lib/pin-field.min.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@soywod/pin-field@0.1.8/lib/pin-field.min.js"></script>
 ```
 
 ## Usage

@@ -40,11 +40,6 @@ export type PinFieldFormatter = (key: string) => string;
 
 export class PinField extends HTMLElement {
   /**
-   * List of HTMLInputElement the PIN Field is composed of.
-   */
-  private inputs: HTMLInputElement[] = [];
-
-  /**
    * Current input focus cursor.
    */
   private cursor: number = 0;
@@ -75,6 +70,11 @@ export class PinField extends HTMLElement {
     if (this.validate instanceof RegExp) return this.validate.test(key);
     return this.validate(key);
   }
+
+  /**
+   * List of HTMLInputElement the PIN Field is composed of.
+   */
+  inputs: HTMLInputElement[] = [];
 
   /**
    * Length of the field.
@@ -457,3 +457,5 @@ export class PinField extends HTMLElement {
 }
 
 customElements.define("swd-pin-field", PinField);
+
+export default PinField;

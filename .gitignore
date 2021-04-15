@@ -9,5 +9,4 @@ lib/pin-field.min.js
 lib/pin-field.d.ts
 
 # misc
-yarn-debug.log*
-yarn-error.log*
+npm-debug.log*

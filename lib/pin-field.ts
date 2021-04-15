@@ -91,6 +91,44 @@ export class PinField extends HTMLElement {
    */
   format: PinFieldFormatter = (key: string) => {
     return key;
+  };
+
+  /**
+   * Disabled getter.
+   */
+  get disabled() {
+    return this.hasAttribute("disabled");
+  }
+
+  /**
+   * Disabled setter.
+   */
+  set disabled(val) {
+    if (val) {
+      this.setAttribute("disabled", "");
+    } else {
+      this.removeAttribute("disabled");
+    }
+  }
+
+  /**
+   * List of observed attributes.
+   */
+  static get observedAttributes() {
+    return ["disabled"];
+  }
+
+  /**
+   * Attribute changed callback.
+   */
+  protected attributeChangedCallback(name: string, prevVal: string, nextVal: string) {
+    if (prevVal !== nextVal) {
+      switch (name) {
+        case "disabled": {
+          this.inputs.forEach(i => (i.disabled = this.disabled));
+        }
+      }
+    }
   }
 
   /**

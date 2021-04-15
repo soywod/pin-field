@@ -1,6 +1,6 @@
 const field1 = document.getElementById("pin-field-jumbotron");
 field1.format = key => key.toUpperCase();
-field1.addEventListener("complete", () => field1.inputs.forEach(input => (input.disabled = true)));
+field1.addEventListener("complete", () => (field1.disabled = true));
 
 const field2 = document.getElementById("pin-field-uppercase");
 field2.format = key => key.toUpperCase();

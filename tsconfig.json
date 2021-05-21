@@ -7,7 +7,7 @@
     "importHelpers": true,
     "lib": ["DOM", "ESNext"],
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "noEmit": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,

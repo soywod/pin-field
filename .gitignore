@@ -9,6 +9,7 @@ dist/
 # Direnv
 .envrc
 .direnv/
+.log/
 
 # misc
 yarn-debug.log*

@@ -4,10 +4,6 @@ function range(start: number, length: number) {
   return Array.from({length}, (_, i) => i + start);
 }
 
-function debug(scope: string, fn: string, msg?: string) {
-  console.debug(`[PIN Field] (${scope}) ${fn}${msg ? `: ${msg}` : ""}`);
-}
-
 function getPrevInputIdx(cursor: number) {
   return Math.max(0, cursor - 1);
 }
@@ -72,6 +68,15 @@ export class PinField extends HTMLElement {
   }
 
   /**
+   * Logger.
+   */
+  private log(scope: string, fn: string, msg?: string) {
+    if (this.debug) {
+      console.debug(`[PIN Field] (${scope}) ${fn}${msg ? `: ${msg}` : ""}`);
+    }
+  }
+
+  /**
    * List of HTMLInputElement the PIN Field is composed of.
    */
   inputs: HTMLInputElement[] = [];
@@ -94,6 +99,24 @@ export class PinField extends HTMLElement {
   };
 
   /**
+   * Debug getter.
+   */
+  get debug() {
+    return this.hasAttribute("debug");
+  }
+
+  /**
+   * Debug setter.
+   */
+  set debug(val: boolean) {
+    if (val) {
+      this.setAttribute("debug", "");
+    } else {
+      this.removeAttribute("debug");
+    }
+  }
+
+  /**
    * Disabled getter.
    */
   get disabled() {
@@ -103,7 +126,7 @@ export class PinField extends HTMLElement {
   /**
    * Disabled setter.
    */
-  set disabled(val) {
+  set disabled(val: boolean) {
     if (val) {
       this.setAttribute("disabled", "");
     } else {
@@ -115,17 +138,22 @@ export class PinField extends HTMLElement {
    * List of observed attributes.
    */
   static get observedAttributes() {
-    return ["disabled"];
+    return ["debug", "disabled"];
   }
 
   /**
    * Attribute changed callback.
    */
-  protected attributeChangedCallback(name: string, prevVal: string, nextVal: string) {
+  protected attributeChangedCallback(name: string, prevVal: string | null, nextVal: string | null) {
     if (prevVal !== nextVal) {
       switch (name) {
+        case "debug": {
+          this.debug = nextVal !== null;
+          break;
+        }
         case "disabled": {
           this.inputs.forEach(i => (i.disabled = this.disabled));
+          break;
         }
       }
     }
@@ -155,7 +183,7 @@ export class PinField extends HTMLElement {
     const clearAttrs = [];
     for (let i = 0; i < this.attributes.length; i++) {
       const attr = this.attributes[i];
-      if (!["id", "autofocus"].includes(attr.name)) {
+      if (!["id", "autofocus", "debug"].includes(attr.name)) {
         input.setAttribute(attr.name, attr.value);
         clearAttrs.push(() => attr && this.removeAttribute(attr.name));
       }
@@ -166,7 +194,7 @@ export class PinField extends HTMLElement {
         const inputClone = input.cloneNode(true) as HTMLInputElement;
 
         if (idx === 0 && this.hasAttribute("autofocus")) {
-          inputClone.autofocus = true;
+          inputClone.setAttribute("autofocus", "");
           this.removeAttribute("autofocus");
         }
 
@@ -181,7 +209,6 @@ export class PinField extends HTMLElement {
     this.attachShadow({mode: "open"}).append(css, tpl);
 
     clearAttrs.forEach(clear => clear());
-
     this.inputs.forEach((input, idx) => {
       input.addEventListener("keydown", this.handleKeyDown(idx));
       input.addEventListener("keyup", this.handleKeyUp(idx));
@@ -243,7 +270,7 @@ export class PinField extends HTMLElement {
 
       switch (action.type) {
         case "handle-key-down": {
-          debug("action", "handle-key-down", `key=${action.key}`);
+          this.log("action", "handle-key-down", `key=${action.key}`);
 
           switch (action.key) {
             case "Unidentified": {
@@ -298,11 +325,11 @@ export class PinField extends HTMLElement {
 
         case "handle-key-up": {
           if (!this.fallback) {
-            debug("action", "handle-key-up", "ignored");
+            this.log("action", "handle-key-up", "ignored");
             break;
           }
 
-          debug("action", "handle-key-up");
+          this.log("action", "handle-key-up");
           const {idx, val: prevVal} = this.fallback;
           let val = action.val;
 
@@ -337,27 +364,27 @@ export class PinField extends HTMLElement {
 
       switch (eff.type) {
         case "focus-input": {
-          debug("effect", "focus-input", `idx=${eff.idx}`);
+          this.log("effect", "focus-input", `idx=${eff.idx}`);
           this.inputs[eff.idx].focus();
           break;
         }
 
         case "set-input-val": {
-          debug("effect", "set-input-val", `idx=${eff.idx},val=${eff.val}`);
+          this.log("effect", "set-input-val", `idx=${eff.idx},val=${eff.val}`);
           const val = this.format(eff.val);
           this.inputs[eff.idx].value = val;
           break;
         }
 
         case "resolve-key": {
-          debug("effect", "resolve-key", `idx=${eff.idx},key=${eff.key}`);
+          this.log("effect", "resolve-key", `idx=${eff.idx},key=${eff.key}`);
           this.inputs[eff.idx].setCustomValidity("");
           this.dispatchEvent(new CustomEvent("resolve", {detail: {key: eff.key}}));
           break;
         }
 
         case "reject-key": {
-          debug("effect", "reject-key", `idx=${eff.idx},key=${eff.key}`);
+          this.log("effect", "reject-key", `idx=${eff.idx},key=${eff.key}`);
           this.inputs[eff.idx].setCustomValidity("Invalid key");
           this.dispatchEvent(new CustomEvent("reject", {detail: {key: eff.key}}));
           break;
@@ -365,7 +392,7 @@ export class PinField extends HTMLElement {
 
         // TODO: split into existing effects
         case "handle-delete": {
-          debug("effect", "handle-delete", `idx=${eff.idx}`);
+          this.log("effect", "handle-delete", `idx=${eff.idx}`);
           const prevVal = this.inputs[eff.idx].value;
           this.inputs[eff.idx].setCustomValidity("");
           this.inputs[eff.idx].value = "";
@@ -384,7 +411,7 @@ export class PinField extends HTMLElement {
           const dir = (document.documentElement.getAttribute("dir") || "ltr").toLowerCase();
           const codeArr = this.inputs.map(r => r.value.trim());
           const value = (dir === "rtl" ? codeArr.reverse() : codeArr).join("");
-          debug("effect", "handle-code-change", `val={${value}}`);
+          this.log("effect", "handle-code-change", `val={${value}}`);
           this.dispatchEvent(new CustomEvent("change", {detail: {value}}));
 
           if (value.length === this.length) {
@@ -414,14 +441,14 @@ export class PinField extends HTMLElement {
   private handleKeyDown(idx: number) {
     return (evt: KeyboardEvent) => {
       if (IGNORED_META_KEYS.includes(evt.key) || evt.ctrlKey || evt.altKey || evt.metaKey) {
-        debug("handleKeyDown", "ignored", `idx=${idx},key=${evt.key}`);
+        this.log("handleKeyDown", "ignored", `idx=${idx},key=${evt.key}`);
         return;
       }
 
       if (evt.target instanceof HTMLInputElement) {
         evt.preventDefault();
         const val = evt.target.value;
-        debug("handleKeyDown", "triggered", `idx=${idx},key=${evt.key},val=${val}`);
+        this.log("handleKeyDown", "triggered", `idx=${idx},key=${evt.key},val=${val}`);
         this.actions.push({type: "handle-key-down", idx, key: evt.key, val});
         this.render();
       }
@@ -435,7 +462,7 @@ export class PinField extends HTMLElement {
     return (evt: KeyboardEvent) => {
       if (evt.target instanceof HTMLInputElement) {
         const val = evt.target.value;
-        debug("handleKeyUp", "triggered", `idx=${idx},val=${val}`);
+        this.log("handleKeyUp", "triggered", `idx=${idx},val=${val}`);
         this.actions.push({type: "handle-key-up", idx, val});
         this.render();
       }
@@ -449,7 +476,7 @@ export class PinField extends HTMLElement {
     return (evt: ClipboardEvent) => {
       evt.preventDefault();
       const val = evt.clipboardData ? evt.clipboardData.getData("Text") : "";
-      debug("handlePaste", "triggered", `idx=${idx},val=${val}`);
+      this.log("handlePaste", "triggered", `idx=${idx},val=${val}`);
       this.actions.push({type: "handle-paste", idx, val});
       this.render();
     };

@@ -6,6 +6,10 @@ node_modules/
 # production
 dist/
 
+# Direnv
+.envrc
+.direnv/
+
 # misc
 yarn-debug.log*
 yarn-error.log*

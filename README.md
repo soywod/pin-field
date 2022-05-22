@@ -1,3 +1,7 @@
+⚠️ *Project archived due to multiple issues related to Web
+Components. See its [React
+implementation](https://github.com/soywod/react-pin-field).*
+
 # 📟 PIN Field [![npm](https://img.shields.io/npm/v/@soywod/pin-field)](https://www.npmjs.com/package/@soywod/pin-field)
 
 Native web component for entering PIN codes.
